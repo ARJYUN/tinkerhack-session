@@ -1,0 +1,198 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Movie Booking Demo</title>
+<style>
+    body {
+        font-family: Arial, sans-serif;
+        background: #111;
+        color: white;
+        text-align: center;
+        margin: 0;
+    }
+
+    h1 {
+        background: crimson;
+        padding: 15px;
+        margin: 0;
+    }
+
+    .container {
+        padding: 20px;
+    }
+
+    select {
+        padding: 8px;
+        margin: 10px;
+        border-radius: 5px;
+    }
+
+    .screen {
+        background: white;
+        color: black;
+        padding: 10px;
+        margin: 20px auto;
+        width: 60%;
+        border-radius: 5px;
+        font-weight: bold;
+    }
+
+    .seats {
+        display: grid;
+        grid-template-columns: repeat(8, 40px);
+        gap: 10px;
+        justify-content: center;
+        margin-bottom: 20px;
+    }
+
+    .seat {
+        width: 40px;
+        height: 40px;
+        background: #444;
+        border-radius: 5px;
+        cursor: pointer;
+    }
+
+    .seat.selected {
+        background: limegreen;
+    }
+
+    .seat.booked {
+        background: crimson;
+        cursor: not-allowed;
+    }
+
+    .summary {
+        margin-top: 20px;
+        padding: 15px;
+        background: #222;
+        border-radius: 8px;
+        display: inline-block;
+    }
+
+    button {
+        padding: 10px 15px;
+        margin: 10px;
+        border: none;
+        border-radius: 5px;
+        background: crimson;
+        color: white;
+        cursor: pointer;
+    }
+
+    button:hover {
+        opacity: 0.8;
+    }
+</style>
+</head>
+<body>
+
+<h1>🎬 Movie Booking System</h1>
+
+<div class="container">
+
+    <div>
+        <label>Choose Movie:</label>
+        <select id="movie">
+            <option value="150">Interstellar - ₹150</option>
+            <option value="120">Avengers - ₹120</option>
+            <option value="100">Inception - ₹100</option>
+        </select>
+
+        <label>Show Time:</label>
+        <select id="time">
+            <option>10:00 AM</option>
+            <option>2:00 PM</option>
+            <option>6:00 PM</option>
+            <option>9:00 PM</option>
+        </select>
+    </div>
+
+    <div class="screen">SCREEN</div>
+
+    <div class="seats" id="seatContainer"></div>
+
+    <div class="summary">
+        <p>Selected Seats: <span id="count">0</span></p>
+        <p>Total Price: ₹<span id="total">0</span></p>
+    </div>
+
+    <div>
+        <button onclick="confirmBooking()">Confirm Booking</button>
+        <button onclick="resetBooking()">Reset</button>
+    </div>
+
+</div>
+
+<script>
+const seatContainer = document.getElementById("seatContainer");
+const count = document.getElementById("count");
+const total = document.getElementById("total");
+const movieSelect = document.getElementById("movie");
+
+let ticketPrice = +movieSelect.value;
+
+// Create Seats
+for (let i = 0; i < 48; i++) {
+    const seat = document.createElement("div");
+    seat.classList.add("seat");
+
+    // Randomly mark some seats booked
+    if (Math.random() < 0.2) {
+        seat.classList.add("booked");
+    }
+
+    seatContainer.appendChild(seat);
+}
+
+// Update price when movie changes
+movieSelect.addEventListener("change", (e) => {
+    ticketPrice = +e.target.value;
+    updateTotal();
+});
+
+// Seat click
+seatContainer.addEventListener("click", (e) => {
+    if (
+        e.target.classList.contains("seat") &&
+        !e.target.classList.contains("booked")
+    ) {
+        e.target.classList.toggle("selected");
+        updateTotal();
+    }
+});
+
+function updateTotal() {
+    const selectedSeats = document.querySelectorAll(".seat.selected");
+    count.innerText = selectedSeats.length;
+    total.innerText = selectedSeats.length * ticketPrice;
+}
+
+function confirmBooking() {
+    const selectedSeats = document.querySelectorAll(".seat.selected");
+    if (selectedSeats.length === 0) {
+        alert("Please select at least one seat!");
+        return;
+    }
+
+    selectedSeats.forEach(seat => {
+        seat.classList.remove("selected");
+        seat.classList.add("booked");
+    });
+
+    alert("🎉 Booking Confirmed!");
+    updateTotal();
+}
+
+function resetBooking() {
+    document.querySelectorAll(".seat.selected").forEach(seat => {
+        seat.classList.remove("selected");
+    });
+    updateTotal();
+}
+</script>
+
+</body>
+</html>
